@@ -1,0 +1,77 @@
+from rest_framework import viewsets, filters
+from rest_framework.decorators import action
+from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
+
+from .serializers.categoria_serializer import CategoriaSerializer
+from .serializers.cliente_serializer import ClienteSerializer
+from .serializers.detallepedido_serializer import DetallePedidoSerializer
+from .serializers.movimientoinventario_serializer import MovimientoInventarioSerializer
+from .serializers.pedido_serializer import PedidoSerializer
+from .serializers.producto_serializer import ProductoSerializer, ProductoProveedorSerializer
+from .serializers.proveedor_serializer import ProveedorSerializer
+from .models import *
+from .serializers import *
+
+class BaseViewSet(viewsets.ModelViewSet):
+    filter_backends = [filters.SearchFilter]
+    permission_classes = [IsAuthenticatedOrReadOnly]
+
+    def get_permissions(self):
+        if self.action in ['create', 'update', 'partial_update', 'destroy']:
+            return [IsAuthenticated()]
+        return [IsAuthenticatedOrReadOnly()]
+
+
+class CategoriaViewSet(BaseViewSet):
+    queryset = Categoria.objects.all()
+    serializer_class = CategoriaSerializer
+    search_fields = ['nombre']
+
+
+class ProductoViewSet(BaseViewSet):
+    queryset = Producto.objects.all()
+    serializer_class = ProductoSerializer
+    search_fields = ['nombre']
+
+    # NUEVO ENDPOINT: productos con stock bajo
+    @action(detail=False, methods=['get'])
+    def stock_bajo(self, request):
+        productos = Producto.objects.filter(stock__lt=models.F('cantidad_minima'))
+        serializer = self.get_serializer(productos, many=True)
+        return Response(serializer.data)
+
+
+class ClienteViewSet(BaseViewSet):
+    queryset = Cliente.objects.all()
+    serializer_class = ClienteSerializer
+    search_fields = ['nombre', 'email']
+
+
+class PedidoViewSet(BaseViewSet):
+    queryset = Pedido.objects.all()
+    serializer_class = PedidoSerializer
+    search_fields = ['cliente__nombre']
+
+
+class DetallePedidoViewSet(BaseViewSet):
+    queryset = DetallePedido.objects.all()
+    serializer_class = DetallePedidoSerializer
+    search_fields = ['producto__nombre']
+
+
+class ProveedorViewSet(BaseViewSet):
+    queryset = Proveedor.objects.all()
+    serializer_class = ProveedorSerializer
+    search_fields = ['nombre']
+
+
+class ProductoProveedorViewSet(BaseViewSet):
+    queryset = ProductoProveedor.objects.all()
+    serializer_class = ProductoProveedorSerializer
+
+
+class MovimientoInventarioViewSet(BaseViewSet):
+    queryset = MovimientoInventario.objects.all()
+    serializer_class = MovimientoInventarioSerializer
+    search_fields = ['producto__nombre']
