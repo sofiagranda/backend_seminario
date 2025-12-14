@@ -42,8 +42,8 @@ jobs:
         SECRET_KEY: test-secret-key
       run: |
         python manage.py test
-
-  deploy:
+    
+   deploy:
     needs: test
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
@@ -71,6 +71,6 @@ jobs:
             pip install -r requirements.txt
             python manage.py migrate --noinput
             python manage.py collectstatic --noinput --clear
-            # Reiniciar servicios (el '|| true' evita que el despliegue falle si el servicio no existe)
+            # Reiniciar servicios
             systemctl restart gunicorn || true
             systemctl restart nginx || true
