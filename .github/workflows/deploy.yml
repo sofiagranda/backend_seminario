@@ -41,7 +41,7 @@ jobs:
         SECRET_KEY: test-secret-key
       run: |
         python manage.py test
-    
+   
    deploy:
     needs: test
     runs-on: ubuntu-latest
