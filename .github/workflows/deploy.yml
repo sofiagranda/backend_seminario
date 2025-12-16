@@ -69,8 +69,9 @@ jobs:
         VENV_PATH: ${{ secrets.VENV_PATH }}
       run: |
         # Comandos SSH para desplegar
-        ssh $VPS_USER@$VPS_HOST "
+        ssh -i ~/.ssh/id_rsa $VPS_USER@$VPS_HOST "
           set -e
+          echo 'Conexión exitosa, iniciando comandos...'
          
           echo '1. Actualizando código...'
           cd $PROJECT_PATH
@@ -90,8 +91,8 @@ jobs:
           python manage.py collectstatic --noinput --clear
          
           echo '6. Reiniciando servicios...'
-          systemctl restart gunicorn || true
-          systemctl restart nginx || true
+          sudo systemctl restart gunicorn || true
+          sudo systemctl restart nginx || true
          
           echo '✅ Despliegue completado'
         "
