@@ -7,8 +7,7 @@ on:
     branches: [ main, master ]
 
 jobs:
-   
-   test:
+  test:
     runs-on: ubuntu-latest
    
     services:
@@ -43,35 +42,56 @@ jobs:
         SECRET_KEY: test-secret-key
       run: |
         python manage.py test
+
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
    
-   deploy:
-    needs: test
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
-
-    steps:
-      # 1. Descarga el código
-      - uses: actions/checkout@v4
-
-      # 2. Usa la acción de Appleboy para gestionar la conexión SSH y el despliegue
-      - name: Deploy to VPS using appleboy/ssh-action
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.VPS_HOST }}
-          username: ${{ secrets.VPS_USERNAME }}
-          key: ${{ secrets.VPS_SSH_KEY }}
-          script: |
-            set -e
-            # Ir al directorio del proyecto en el servidor
-            cd ${{ secrets.PROJECT_PATH }}
-            # Obtener los cambios
-            git fetch origin
-            git reset --hard origin/main
-            # Actualizar entorno virtual y ejecutar comandos de Django
-            source ${{ secrets.VENV_PATH }}/bin/activate
-            pip install -r requirements.txt
-            python manage.py migrate --noinput
-            python manage.py collectstatic --noinput --clear
-            # Reiniciar servicios
-            systemctl restart gunicorn || true
-            systemctl restart nginx || true
+    steps:
+    - uses: actions/checkout@v4
+   
+    - name: Setup SSH
+      run: |
+        mkdir -p ~/.ssh
+        echo "${{ secrets.VPS_SSH_KEY }}" > ~/.ssh/id_rsa
+        chmod 600 ~/.ssh/id_rsa
+       
+        # Añadir el host a known_hosts
+        ssh-keyscan -H ${{ secrets.VPS_HOST }} >> ~/.ssh/known_hosts
+   
+    - name: Deploy to VPS
+      env:
+        VPS_HOST: ${{ secrets.VPS_HOST }}
+        VPS_USER: ${{ secrets.VPS_USERNAME }}
+        DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
+        PROJECT_PATH: ${{ secrets.PROJECT_PATH }}
+        VENV_PATH: ${{ secrets.VENV_PATH }}
+      run: |
+        # Comandos SSH para desplegar
+        ssh $VPS_USER@$VPS_HOST "
+          set -e
+         
+          echo '1. Actualizando código...'
+          cd $PROJECT_PATH
+          git fetch origin
+          git reset --hard origin/main
+         
+          echo '2. Activando entorno virtual...'
+          source $VENV_PATH/bin/activate
+         
+          echo '3. Instalando dependencias...'
+          pip install -r requirements.txt
+         
+          echo '4. Aplicando migraciones...'
+          python manage.py migrate --noinput
+         
+          echo '5. Colectando archivos estáticos...'
+          python manage.py collectstatic --noinput --clear
+         
+          echo '6. Reiniciando servicios...'
+          systemctl restart gunicorn || true
+          systemctl restart nginx || true
+         
+          echo '✅ Despliegue completado'
+        "
