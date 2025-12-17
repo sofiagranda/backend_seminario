@@ -17,6 +17,8 @@ router.register(r'producto-proveedor', views.ProductoProveedorViewSet)
 router.register(r'movimientos', views.MovimientoInventarioViewSet)
 
 urlpatterns = [
+    path('', RedirectView.as_view(url='admin/', permanent=True)),
+
     path('admin/', admin.site.urls),
 
     path('api/', include(router.urls)),
