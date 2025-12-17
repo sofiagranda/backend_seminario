@@ -1,4 +1,4 @@
-name: Deploy Django to VPS
+name: Deploy Django en VPS
 
 on:
   push:
