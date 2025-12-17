@@ -57,7 +57,7 @@ jobs:
         echo "${{ secrets.VPS_SSH_KEY }}" > ~/.ssh/id_rsa
         chmod 600 ~/.ssh/id_rsa
        
-        # Añadir el host a known_hosts
+        # Escaneamos el host para evitar preguntas de seguridad
         ssh-keyscan -H ${{ secrets.VPS_HOST }} >> ~/.ssh/known_hosts
    
     - name: Deploy to VPS
