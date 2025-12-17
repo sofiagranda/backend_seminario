@@ -3,6 +3,7 @@ from django.urls import path, include
 from rest_framework import routers
 from mi_app import views
 from rest_framework.authtoken import views as drf_views  # Para TokenAuth
+from django.views.generic.base import RedirectView
 # from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView  # Para JWT
 
 # Configuración del router de DRF
