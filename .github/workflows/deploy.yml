@@ -1,4 +1,4 @@
-name: Deploy Django en VPS
+name: Deploy Django to VPS
 
 on:
   push:
@@ -9,7 +9,6 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-   
     services:
       postgres:
         image: postgres:13
@@ -22,20 +21,16 @@ jobs:
           --health-retries 5
         ports:
           - 5432:5432
-   
     steps:
     - uses: actions/checkout@v4
-   
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
         python-version: '3.12'
-   
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
-   
     - name: Run tests
       env:
         DATABASE_URL: postgres://postgres:postgres@localhost:5432/postgres
@@ -47,52 +42,50 @@ jobs:
     needs: test
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
-   
     steps:
     - uses: actions/checkout@v4
-   
+    
     - name: Setup SSH
       run: |
         mkdir -p ~/.ssh
-        echo "${{ secrets.VPS_SSH_KEY }}" > ~/.ssh/id_rsa
-        chmod 600 ~/.ssh/id_rsa
-       
-        # Escaneamos el host para evitar preguntas de seguridad
+        # Escribimos la llave asegurando que preserve el formato
+        echo "${{ secrets.VPS_SSH_KEY }}" > ~/.ssh/id_ed25519
+        chmod 600 ~/.ssh/id_ed25519
         ssh-keyscan -H ${{ secrets.VPS_HOST }} >> ~/.ssh/known_hosts
-   
+
     - name: Deploy to VPS
       env:
         VPS_HOST: ${{ secrets.VPS_HOST }}
         VPS_USER: ${{ secrets.VPS_USERNAME }}
-        DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
         PROJECT_PATH: ${{ secrets.PROJECT_PATH }}
         VENV_PATH: ${{ secrets.VENV_PATH }}
       run: |
-        # Comandos SSH para desplegar
-        ssh -i ~/.ssh/id_rsa $VPS_USER@$VPS_HOST "
+        ssh -i ~/.ssh/id_ed25519 $VPS_USER@$VPS_HOST "
           set -e
           echo 'Conexión exitosa, iniciando comandos...'
-         
+
           echo '1. Actualizando código...'
           cd $PROJECT_PATH
+          # Forzamos a git a no preguntar por el host por si acaso
+          git config core.sshCommand 'ssh -o StrictHostKeyChecking=no'
           git fetch origin
           git reset --hard origin/main
-         
+
           echo '2. Activando entorno virtual...'
           source $VENV_PATH/bin/activate
-         
+
           echo '3. Instalando dependencias...'
           pip install -r requirements.txt
-         
+
           echo '4. Aplicando migraciones...'
           python manage.py migrate --noinput
-         
+
           echo '5. Colectando archivos estáticos...'
           python manage.py collectstatic --noinput --clear
-         
+
           echo '6. Reiniciando servicios...'
           sudo systemctl restart gunicorn || true
           sudo systemctl restart nginx || true
-         
+
           echo '✅ Despliegue completado'
         "
