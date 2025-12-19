@@ -68,9 +68,9 @@ WSGI_APPLICATION = 'config.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'billing_db',
-        'USER': 'billing_user',
-        'PASSWORD': 'billing_pass_123',
+        'NAME': 'inventario_db',
+        'USER': 'nicolas',
+        'PASSWORD': 'epku3758',
         'HOST': 'localhost',
         'PORT': '5432',
     }
