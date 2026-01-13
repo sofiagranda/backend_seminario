@@ -1,6 +1,6 @@
 git clone https://github.com/sofiagranda/backend_seminario.git
 
-cd mi_backend
+cd backend_seminario
 
 pip install -r requirements.txt
 
