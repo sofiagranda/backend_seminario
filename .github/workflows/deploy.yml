@@ -65,6 +65,7 @@ jobs:
           echo 'Conexión exitosa, iniciando comandos...'
 
           echo '1. Actualizando código...'
+          echo "$PROJECT_PATH"
           cd $PROJECT_PATH
           # Forzamos a git a no preguntar por el host por si acaso
           git config core.sshCommand 'ssh -o StrictHostKeyChecking=no'
