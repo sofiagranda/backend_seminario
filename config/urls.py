@@ -4,6 +4,8 @@ from rest_framework import routers
 from mi_app import views
 from rest_framework.authtoken import views as drf_views  # Para TokenAuth
 from django.views.generic.base import RedirectView
+from django.conf import settings
+from django.conf.urls.static import static
 # from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView  # Para JWT
 
 # Configuración del router de DRF
@@ -27,4 +29,5 @@ urlpatterns = [
     path('api/auth/login/', drf_views.obtain_auth_token, name='api-token-auth'),
 
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
-]
+]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
