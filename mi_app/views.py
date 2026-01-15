@@ -31,12 +31,14 @@ class CategoriaViewSet(BaseViewSet):
     queryset = Categoria.objects.all()
     serializer_class = CategoriaSerializer
     search_fields = ['nombre']
+    permission_classes = [AllowAny]
 
 
 class ProductoViewSet(BaseViewSet):
     queryset = Producto.objects.all()
     serializer_class = ProductoSerializer
     search_fields = ['nombre']
+    permission_classes = [AllowAny]
 
     # NUEVO ENDPOINT: productos con stock bajo
     @action(detail=False, methods=['get'])
@@ -68,6 +70,7 @@ class ProveedorViewSet(BaseViewSet):
     queryset = Proveedor.objects.all()
     serializer_class = ProveedorSerializer
     search_fields = ['nombre']
+    permission_classes = [AllowAny]
 
 
 class ProductoProveedorViewSet(BaseViewSet):
