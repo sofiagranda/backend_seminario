@@ -102,7 +102,7 @@ def registro_usuario(request):
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def registro_usuario_cliente(request):
-    nombre = request.data.get('nombre')
+    nombre = request.data.get('username')
     email = request.data.get('email')
     telefono = request.data.get('telefono')
     password = request.data.get('password')
@@ -110,7 +110,7 @@ def registro_usuario_cliente(request):
 
     campos_faltantes = []
     if not nombre:
-        campos_faltantes.append("nombre")
+        campos_faltantes.append("username")
     if not email:
         campos_faltantes.append("email")
     if not telefono:
