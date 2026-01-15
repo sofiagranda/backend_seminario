@@ -98,3 +98,32 @@ def registro_usuario(request):
 
     user = User.objects.create_user(username=username, email=email, password=password)
     return Response({"message": "Usuario creado"}, status=status.HTTP_201_CREATED)
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def registro_usuario_cliente(request):
+    nombre = request.data.get('nombre')
+    email = request.data.get('email')
+    telefono = request.data.get('telefono')
+    password = request.data.get('password')
+
+    if not all([nombre, email, telefono, password]):
+        return Response({"error": "Faltan campos"}, status=status.HTTP_400_BAD_REQUEST)
+
+    if User.objects.filter(username=nombre).exists():
+        return Response({"error": "Usuario ya existe"}, status=status.HTTP_400_BAD_REQUEST)
+
+    user = User.objects.create_user(username=nombre, password=password)
+
+    cliente = Cliente.objects.create(
+        user=user,
+        nombre=nombre,
+        email=email,
+        telefono=telefono
+    )
+
+    return Response({
+        "message": "Usuario y cliente creados",
+        "user_id": user.id,
+        "cliente_id": cliente.id
+    }, status=status.HTTP_201_CREATED)
