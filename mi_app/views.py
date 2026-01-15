@@ -107,8 +107,21 @@ def registro_usuario_cliente(request):
     telefono = request.data.get('telefono')
     password = request.data.get('password')
 
-    if not all([nombre, email, telefono, password]):
-        return Response({"error": "Faltan campos"}, status=status.HTTP_400_BAD_REQUEST)
+    campos_faltantes = []
+    if not nombre:
+        campos_faltantes.append("nombre")
+    if not email:
+        campos_faltantes.append("email")
+    if not telefono:
+        campos_faltantes.append("telefono")
+    if not password:
+        campos_faltantes.append("password")
+
+    if campos_faltantes:
+        return Response(
+            {"error": f"Faltan campos: {', '.join(campos_faltantes)}"},
+            status=status.HTTP_400_BAD_REQUEST
+        )
 
     if User.objects.filter(username=nombre).exists():
         return Response({"error": "Usuario ya existe"}, status=status.HTTP_400_BAD_REQUEST)
@@ -127,3 +140,5 @@ def registro_usuario_cliente(request):
         "user_id": user.id,
         "cliente_id": cliente.id
     }, status=status.HTTP_201_CREATED)
+
+
