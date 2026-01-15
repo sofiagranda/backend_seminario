@@ -29,5 +29,7 @@ urlpatterns = [
     path('api/auth/login/', drf_views.obtain_auth_token, name='api-token-auth'),
 
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
+
+    path('api/auth/registro/', views.registro_usuario, name='registro_usuario'),
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
