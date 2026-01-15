@@ -26,7 +26,7 @@ urlpatterns = [
 
     path('api/', include(router.urls)),
 
-    path('api/auth/login/', drf_views.obtain_auth_token, name='api-token-auth'),
+    path('api/auth/login/', views.CustomAuthToken.as_view(), name='api_login'),
 
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
 
