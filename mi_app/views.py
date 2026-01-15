@@ -118,7 +118,7 @@ def registro_usuario_cliente(request):
 
     cliente = Cliente.objects.create(
         user=user,
-        nombre=username,   # mismo valor que username
+        nombre=username,  
         email=email,
         telefono=telefono
     )
