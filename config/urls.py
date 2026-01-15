@@ -31,5 +31,6 @@ urlpatterns = [
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
 
     path('api/auth/registro/', views.registro_usuario, name='registro_usuario'),
+    path('api/auth/registro_cliente/', views.registro_usuario_cliente, name='registro_usuario_cliente'),
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
