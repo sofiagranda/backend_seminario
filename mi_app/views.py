@@ -80,6 +80,7 @@ class MovimientoInventarioViewSet(BaseViewSet):
     search_fields = ['producto__nombre']
 
 @api_view(['POST'])
+@permission_classes([AllowAny]) 
 def registro_usuario(request):
     username = request.data.get('username')
     email = request.data.get('email')
