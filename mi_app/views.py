@@ -106,6 +106,7 @@ def registro_usuario_cliente(request):
     email = request.data.get('email')
     telefono = request.data.get('telefono')
     password = request.data.get('password')
+    print("Datos recibidos:", request.data)
 
     campos_faltantes = []
     if not nombre:
