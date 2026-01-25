@@ -18,6 +18,7 @@ router.register(r'detalles', views.DetallePedidoViewSet)
 router.register(r'proveedores', views.ProveedorViewSet)
 router.register(r'producto-proveedor', views.ProductoProveedorViewSet)
 router.register(r'movimientos', views.MovimientoInventarioViewSet)
+router.register(r'usuarios', views.UserViewSet)
 
 urlpatterns = [
     path('', RedirectView.as_view(url='admin/', permanent=True)),
