@@ -102,7 +102,7 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',
     ],
-    'PAGE_SIZE': 10,
+    'PAGE_SIZE': 1000,
 }
 
 CORS_ALLOW_ALL_ORIGINS = True
