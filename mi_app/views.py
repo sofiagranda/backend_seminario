@@ -1,3 +1,4 @@
+from mi_app.serializers.usuario_serializer import UserSerializer
 from rest_framework import viewsets, filters
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -84,6 +85,11 @@ class MovimientoInventarioViewSet(BaseViewSet):
     queryset = MovimientoInventario.objects.all()
     serializer_class = MovimientoInventarioSerializer
     search_fields = ['producto__nombre']
+
+class UserViewSet(viewsets.ModelViewSet):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = [AllowAny]
 
 @api_view(['POST'])
 @permission_classes([AllowAny]) 
